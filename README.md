@@ -1,0 +1,1 @@
+# ad-argocd-apps
