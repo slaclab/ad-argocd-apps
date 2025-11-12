@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/slaclab/lcls-cu-inj-model-deployment
     targetRevision: main
-    path: .   # folder in the app repo with k8s manifests/helm chart
+    path: .   # folder in the app repo with k8s manifests
   destination:
     server: https://kubernetes.default.svc
     namespace: lume-online-ml
