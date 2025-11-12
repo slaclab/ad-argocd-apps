@@ -1,0 +1,24 @@
+# applicationset.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: apps-set
+spec:
+  generators:
+  - git:
+      repoURL: https://github.com/slaclab/ad-argocd-apps
+      revision: main
+      directories:
+      - path: apps/* # each folder is an app
+  template:
+    metadata:
+      name: '{{path.basename}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/slaclab/ad-argocd-apps
+        targetRevision: main
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{path.basename}}'

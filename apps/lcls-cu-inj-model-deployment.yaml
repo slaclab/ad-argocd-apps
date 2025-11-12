@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: lcls-cu-inj-model-deployment
+  namespace: lume-online-ml
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/slaclab/lcls-cu-inj-model-deployment
+    targetRevision: main
+    path: .   # folder in the app repo with k8s manifests/helm chart
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: lume-online-ml
+  syncPolicy:
+    automated: {}     # optional: auto-sync on change
