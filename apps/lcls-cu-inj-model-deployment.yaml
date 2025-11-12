@@ -8,9 +8,9 @@ spec:
   source:
     repoURL: https://github.com/slaclab/lcls-cu-inj-model-deployment
     targetRevision: main
-    path: .   # folder in the app repo with k8s manifests
+    path: .
   destination:
     server: https://kubernetes.default.svc
     namespace: lume-online-ml
   syncPolicy:
-    automated: {}     # optional: auto-sync on change
+    automated: {}
