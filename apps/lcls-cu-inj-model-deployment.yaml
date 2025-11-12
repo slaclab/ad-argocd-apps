@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: lcls-cu-inj-model-deployment
-  namespace: lume-online-ml
+  namespace: argocd
 spec:
   project: default
   source:
