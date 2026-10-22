@@ -4,7 +4,7 @@ metadata:
   name: inference-services
   namespace: argocd
 spec:
-  project: default
+  project: lume-online-ml
   source:
     repoURL: https://github.com/slaclab/inference-service
     targetRevision: main

@@ -11,9 +11,9 @@ ArgoCD UI: https://ad-accel-online-ml.slac.stanford.edu/argo-cd (log in with **S
 
 | Application | Project | Deploys from | Namespace |
 |---|---|---|---|
-| `inference-services` | `default` | `slaclab/inference-service` (`deployments/`) | `lume-online-ml` |
-| `lcls-cu-inj-model-deployment` | `default` | `slaclab/lcls-cu-inj-model-deployment` | `lume-online-ml` |
-| `lcls-fel-surrogate-deployment` | `default` | `slaclab/lcls-fel-surrogate-deployment` | `lume-online-ml` |
+| `inference-services` | `lume-online-ml` | `slaclab/inference-service` (`deployments/`) | `lume-online-ml` |
+| `lcls-cu-inj-model-deployment` | `lume-online-ml` | `slaclab/lcls-cu-inj-model-deployment` | `lume-online-ml` |
+| `lcls-fel-surrogate-deployment` | `lume-online-ml` | `slaclab/lcls-fel-surrogate-deployment` | `lume-online-ml` |
 | `lume-visual-dashboard` | `lume-visual-dashboard` | `slaclab/lume-visual-dashboard` (`deploy/kubernetes/overlays/prod`) | `lume-visual-dashboard` |
 
 There are two places to make changes:
@@ -22,6 +22,9 @@ There are two places to make changes:
   ArgoCD picks up the change on `main` (or the app's `targetRevision`) within ~3 minutes.
 - **To change how an app is deployed** (source repo, branch, path, namespace, project, sync
   options), edit its file in `apps/` in this repo.
+- **To change `apps-root` itself**, edit `root-app.yaml` and apply it by hand after merging:
+  `kubectl apply -f root-app.yaml`. Nothing syncs this file automatically, so keep the live app
+  and the file in step.
 
 ## Permissions
 
@@ -36,7 +39,8 @@ There are two separate permission systems. They are **not** linked.
 
 | Project | Allowed source repo | Allowed namespace | Developer role |
 |---|---|---|---|
-| `default` | any | any | admins only |
+| `default` | any | any | admins only (only `apps-root` uses it) |
+| `lume-online-ml` | `slaclab/inference-service`, `slaclab/lcls-cu-inj-model-deployment`, `slaclab/lcls-fel-surrogate-deployment` | `lume-online-ml` | admins only |
 | `lume-visual-dashboard` | `slaclab/lume-visual-dashboard` | `lume-visual-dashboard` | `role:lume-visual-dashboard-developer` |
 | `badger-gui` | `xopt-org/badger` | `badger-gui` | `role:badger-gui-developer` |
 
