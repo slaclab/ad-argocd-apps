@@ -4,7 +4,7 @@ metadata:
   name: lume-visual-dashboard
   namespace: argocd
 spec:
-  project: default
+  project: lume-visual-dashboard
   source:
     repoURL: https://github.com/slaclab/lume-visual-dashboard
     targetRevision: main
