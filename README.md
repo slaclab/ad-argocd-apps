@@ -1,1 +1,79 @@
 # ad-argocd-apps
+
+ArgoCD application definitions for the `ad-accel-online-ml` vcluster at SLAC SDF.
+
+ArgoCD UI: https://ad-accel-online-ml.slac.stanford.edu/argo-cd (log in with **SLAC SSO**)
+
+## How it works
+
+`root-app.yaml` defines `apps-root`, an "app of apps" that watches the `apps/` folder on
+`main`. Each file in `apps/` is an ArgoCD `Application` pointing at a deployment repo:
+
+| Application | Project | Deploys from | Namespace |
+|---|---|---|---|
+| `inference-services` | `default` | `slaclab/inference-service` (`deployments/`) | `lume-online-ml` |
+| `lcls-cu-inj-model-deployment` | `default` | `slaclab/lcls-cu-inj-model-deployment` | `lume-online-ml` |
+| `lcls-fel-surrogate-deployment` | `default` | `slaclab/lcls-fel-surrogate-deployment` | `lume-online-ml` |
+| `lume-visual-dashboard` | `lume-visual-dashboard` | `slaclab/lume-visual-dashboard` (`deploy/kubernetes/overlays/prod`) | `lume-visual-dashboard` |
+
+There are two places to make changes:
+
+- **To change what is deployed** (images, replicas, config), edit the app's own deployment repo.
+  ArgoCD picks up the change on `main` (or the app's `targetRevision`) within ~3 minutes.
+- **To change how an app is deployed** (source repo, branch, path, namespace, project, sync
+  options), edit its file in `apps/` in this repo.
+
+## Permissions
+
+There are two separate permission systems. They are **not** linked.
+
+**ArgoCD UI** (defined in the `argocd-rbac-cm` ConfigMap on the cluster, not in this repo):
+
+- **Admins** have full access to all apps and projects.
+- **Project developer roles** let you view, sync, restart, roll back, and view logs for apps in
+  one project only. You can't change the project itself (allowed repos/namespaces).
+- **Everyone else** who logs in with SSO gets no access by default.
+
+| Project | Allowed source repo | Allowed namespace | Developer role |
+|---|---|---|---|
+| `default` | any | any | admins only |
+| `lume-visual-dashboard` | `slaclab/lume-visual-dashboard` | `lume-visual-dashboard` | `role:lume-visual-dashboard-developer` |
+| `badger-gui` | `xopt-org/badger` | `badger-gui` | `role:badger-gui-developer` |
+
+**kubectl** access comes from Kubernetes RBAC on the vcluster (`vcluster-admins` and
+`cluster-admin` ClusterRoleBindings). Being in either list gives full cluster-admin, separate
+from your ArgoCD role.
+
+**This repo**: `main` requires a pull request approved by a code owner (see
+`.github/CODEOWNERS`). You can't approve your own PR.
+
+## For developers
+
+**Adding a new app**
+
+1. Put your Kubernetes manifests (plain YAML or Kustomize) in your app's repo.
+2. Ask an admin for a dedicated ArgoCD project scoped to your repo and namespace, and a
+   developer role for that project. New apps should not go in `default`.
+3. Open a PR here adding `apps/<your-app>.yaml`, modeled on `apps/lume-visual-dashboard.yaml`,
+   with `project:` set to your project. Add yourself to `.github/CODEOWNERS` for that file.
+4. Once merged, `apps-root` creates the Application and it starts syncing.
+
+**Things to know**
+
+- **Changes made in the UI aren't permanent.** `apps-root` doesn't self-heal, so an app edited in
+  the UI keeps your changes until the next push to this repo. Then it reverts to what's in
+  `apps/`. Put lasting changes in git.
+- **Deleting a file from `apps/` doesn't delete the app.** `apps-root` doesn't prune, so remove
+  the Application in the UI as well (or ask an admin).
+- **Deleting an app in the UI can delete its running resources.** If the app is still in
+  `apps/`, it gets recreated on the next sync of `apps-root`.
+- **Apps sync automatically but don't self-heal.** Manual `kubectl` edits to resources an app
+  manages are flagged as OutOfSync and are not reverted until the next sync.
+- **The UI pod terminal is disabled.** Use `kubectl exec` if you have kubectl access.
+- **If an app shows `Unknown` sync status**, the source usually can't be resolved, e.g. its
+  `targetRevision` branch was deleted. Check the app's conditions in the UI.
+
+## Getting access
+
+Ask an ArgoCD admin to add you to the right project developer role. For kubectl access to
+the vcluster, ask a vcluster admin.
