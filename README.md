@@ -40,6 +40,9 @@ There are two separate permission systems. They are **not** linked.
 | `lume-visual-dashboard` | `slaclab/lume-visual-dashboard` | `lume-visual-dashboard` | `role:lume-visual-dashboard-developer` |
 | `badger-gui` | `xopt-org/badger` | `badger-gui` | `role:badger-gui-developer` |
 
+Project definitions (except `default`) live in `apps/appproject-*.yaml` and are synced by
+`apps-root` like the Applications. Changing them needs code-owner approval.
+
 **kubectl** access comes from Kubernetes RBAC on the vcluster (`vcluster-admins` and
 `cluster-admin` ClusterRoleBindings). Being in either list gives full cluster-admin, separate
 from your ArgoCD role.

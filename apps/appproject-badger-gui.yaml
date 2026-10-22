@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: badger-gui
+  namespace: argocd
+spec:
+  description: Badger GUI on-demand (noVNC) sessions
+  sourceRepos:
+    - https://github.com/xopt-org/badger.git
+    - https://github.com/xopt-org/badger
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: badger-gui
+  # Only cluster-scoped kind the badger-gui manifests need (k8s/namespace.yaml)
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace

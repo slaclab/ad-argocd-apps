@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: lume-visual-dashboard
+  namespace: argocd
+spec:
+  description: LUME visual dashboard
+  sourceRepos:
+    - https://github.com/slaclab/lume-visual-dashboard
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: lume-visual-dashboard
+  # The app uses CreateNamespace=true, so it manages its own Namespace
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
