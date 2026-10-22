@@ -1,0 +1,5 @@
+# Default owners for everything in the repo (other apps, root-app.yaml, this file)
+*  @pluflou @bhardwaj-gopika
+
+# Owners of the lume-visual-dashboard ArgoCD app definition
+apps/lume-visual-dashboard.yaml  @MitchellAV @pluflou @bhardwaj-gopika

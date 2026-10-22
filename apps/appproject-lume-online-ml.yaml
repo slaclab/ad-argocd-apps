@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: lume-online-ml
+  namespace: argocd
+  annotations:
+    # Create the project before the Applications that reference it
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  description: LUME online ML model and inference deployments
+  sourceRepos:
+    - https://github.com/slaclab/inference-service
+    - https://github.com/slaclab/lcls-cu-inj-model-deployment
+    - https://github.com/slaclab/lcls-fel-surrogate-deployment
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: lume-online-ml
+  # No cluster-scoped resources allowed (the namespace already exists)
+  clusterResourceWhitelist: []
