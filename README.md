@@ -76,6 +76,12 @@ from your ArgoCD role.
   `apps/`, it gets recreated on the next sync of `apps-root`.
 - **Apps sync automatically but don't self-heal.** Manual `kubectl` edits to resources an app
   manages are flagged as OutOfSync and are not reverted until the next sync.
+- **Projects limit what your app can deploy.** If your deployment repo adds a cluster-wide
+  resource (e.g. a ClusterRole, CRD, or Namespace) or targets a namespace outside its project,
+  the app's sync fails with a "not permitted in project" error. Widening a project needs a PR
+  here approved by a code owner (see `.github/CODEOWNERS`).
+- **Adding a new repo or app to an existing project** also means adding the repo to that
+  project's `sourceRepos` in `apps/appproject-<project>.yaml`.
 - **The UI pod terminal is disabled.** Use `kubectl exec` if you have kubectl access.
 - **If an app shows `Unknown` sync status**, the source usually can't be resolved, e.g. its
   `targetRevision` branch was deleted. Check the app's conditions in the UI.
