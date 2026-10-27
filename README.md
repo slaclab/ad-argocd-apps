@@ -61,8 +61,9 @@ There are two separate permission systems. They are **not** linked.
 | `badger-gui` | prod | `xopt-org/badger` | `badger-gui` | `role:badger-gui-developer` |
 
 Project definitions (except `default`) live in `apps/appproject-*.yaml` and
-`apps-dev/appproject-*.yaml` and are synced by `apps-root` like the Applications.
-Each cluster has its own ArgoCD, so roles and admins are set separately on each. Changing them needs code-owner approval.
+`apps-dev/appproject-*.yaml` and are synced by `apps-root` like the Applications. Changing
+them needs code-owner approval. Each cluster has its own ArgoCD, so admins and developer roles
+are set separately on each.
 
 **kubectl** access comes from Kubernetes RBAC on the vcluster (`vcluster-admins` and
 `cluster-admin` ClusterRoleBindings). Being in either list gives full cluster-admin, separate
