@@ -1,13 +1,19 @@
 # ad-argocd-apps
 
-ArgoCD application definitions for the `ad-accel-online-ml` vcluster at SLAC SDF.
+ArgoCD application definitions for the `ad-accel-online-ml` (prod) and `ad-accel-online-ml-dev`
+(dev) vclusters at SLAC SDF.
 
-ArgoCD UI: https://ad-accel-online-ml.slac.stanford.edu/argo-cd (log in with **SLAC SSO**)
+| Cluster | ArgoCD UI (log in with **SLAC SSO**) | Root app file | Watches |
+|---|---|---|---|
+| prod | https://ad-accel-online-ml.slac.stanford.edu/argo-cd | `root-app.yaml` | `apps/` |
+| dev | https://ad-accel-online-ml-dev.slac.stanford.edu/argo-cd | `root-app-dev.yaml` | `apps-dev/` |
 
 ## How it works
 
-`root-app.yaml` defines `apps-root`, an "app of apps" that watches the `apps/` folder on
-`main`. Each file in `apps/` is an ArgoCD `Application` pointing at a deployment repo:
+Each cluster runs an `apps-root` "app of apps" that watches its folder on `main`. Each file in
+that folder is an ArgoCD `Application` (or `AppProject`) pointing at a deployment repo.
+
+**Prod** (`apps/`):
 
 | Application | Project | Deploys from | Namespace |
 |---|---|---|---|
@@ -16,15 +22,25 @@ ArgoCD UI: https://ad-accel-online-ml.slac.stanford.edu/argo-cd (log in with **S
 | `lcls-fel-surrogate-deployment` | `lume-online-ml` | `slaclab/lcls-fel-surrogate-deployment` | `lume-online-ml` |
 | `lume-visual-dashboard` | `lume-visual-dashboard` | `slaclab/lume-visual-dashboard` (`deploy/kubernetes/overlays/prod`) | `lume-visual-dashboard` |
 
+**Dev** (`apps-dev/`):
+
+| Application | Project | Deploys from | Namespace |
+|---|---|---|---|
+| `lume-visual-dashboard` | `lume-visual-dashboard` | `slaclab/lume-visual-dashboard` (`deploy/kubernetes/overlays/dev`) | `lume-visual-dashboard` |
+
+Dev also runs `slacathon26`, which was created by hand and isn't defined in this repo.
+
 There are two places to make changes:
 
 - **To change what is deployed** (images, replicas, config), edit the app's own deployment repo.
   ArgoCD picks up the change on `main` (or the app's `targetRevision`) within ~3 minutes.
 - **To change how an app is deployed** (source repo, branch, path, namespace, project, sync
-  options), edit its file in `apps/` in this repo.
-- **To change `apps-root` itself**, edit `root-app.yaml` and apply it by hand after merging:
-  `kubectl apply -f root-app.yaml`. Nothing syncs this file automatically, so keep the live app
-  and the file in step.
+  options), edit its file in `apps/` or `apps-dev/` in this repo.
+- **To change `apps-root` itself**, edit `root-app.yaml` (prod) or `root-app-dev.yaml` (dev) and
+  apply it by hand after merging, with the matching kubectl context:
+  `kubectl --context ad-accel-online-ml apply -f root-app.yaml` or
+  `kubectl --context ad-accel-online-ml-dev apply -f root-app-dev.yaml`. Nothing syncs these files
+  automatically, so keep the live apps and the files in step.
 
 ## Permissions
 
@@ -37,15 +53,16 @@ There are two separate permission systems. They are **not** linked.
   one project only. You can't change the project itself (allowed repos/namespaces).
 - **Everyone else** who logs in with SSO gets no access by default.
 
-| Project | Allowed source repo | Allowed namespace | Developer role |
-|---|---|---|---|
-| `default` | any | any | admins only (only `apps-root` uses it) |
-| `lume-online-ml` | `slaclab/inference-service`, `slaclab/lcls-cu-inj-model-deployment`, `slaclab/lcls-fel-surrogate-deployment` | `lume-online-ml` | admins only |
-| `lume-visual-dashboard` | `slaclab/lume-visual-dashboard` | `lume-visual-dashboard` | `role:lume-visual-dashboard-developer` |
-| `badger-gui` | `xopt-org/badger` | `badger-gui` | `role:badger-gui-developer` |
+| Project | Cluster | Allowed source repo | Allowed namespace | Developer role |
+|---|---|---|---|---|
+| `default` | both | any | any | admins only (used by `apps-root`; on dev also `slacathon26`) |
+| `lume-online-ml` | prod | `slaclab/inference-service`, `slaclab/lcls-cu-inj-model-deployment`, `slaclab/lcls-fel-surrogate-deployment` | `lume-online-ml` | admins only |
+| `lume-visual-dashboard` | prod, dev | `slaclab/lume-visual-dashboard` | `lume-visual-dashboard` | `role:lume-visual-dashboard-developer` |
+| `badger-gui` | prod | `xopt-org/badger` | `badger-gui` | `role:badger-gui-developer` |
 
-Project definitions (except `default`) live in `apps/appproject-*.yaml` and are synced by
-`apps-root` like the Applications. Changing them needs code-owner approval.
+Project definitions (except `default`) live in `apps/appproject-*.yaml` and
+`apps-dev/appproject-*.yaml` and are synced by `apps-root` like the Applications.
+Each cluster has its own ArgoCD, so roles and admins are set separately on each. Changing them needs code-owner approval.
 
 **kubectl** access comes from Kubernetes RBAC on the vcluster (`vcluster-admins` and
 `cluster-admin` ClusterRoleBindings). Being in either list gives full cluster-admin, separate

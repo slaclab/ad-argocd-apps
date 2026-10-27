@@ -3,3 +3,4 @@
 
 # Owners of the lume-visual-dashboard ArgoCD app definition
 apps/lume-visual-dashboard.yaml  @MitchellAV @pluflou @bhardwaj-gopika
+apps-dev/lume-visual-dashboard.yaml  @MitchellAV @pluflou @bhardwaj-gopika
