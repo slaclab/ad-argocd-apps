@@ -4,7 +4,7 @@ metadata:
   name: lcls-cu-inj-model-deployment
   namespace: argocd
 spec:
-  project: default
+  project: lume-online-ml
   source:
     repoURL: https://github.com/slaclab/lcls-cu-inj-model-deployment
     targetRevision: main

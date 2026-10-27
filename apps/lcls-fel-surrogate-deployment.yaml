@@ -4,7 +4,7 @@ metadata:
   name: lcls-fel-surrogate-deployment
   namespace: argocd
 spec:
-  project: default
+  project: lume-online-ml
   source:
     repoURL: https://github.com/slaclab/lcls-fel-surrogate-deployment
     targetRevision: main
