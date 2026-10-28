@@ -7,18 +7,12 @@ spec:
   project: lume-visual-dashboard
   source:
     repoURL: https://github.com/slaclab/lume-visual-dashboard
-    targetRevision: main
-    path: deploy/kubernetes/overlays/dev
+    targetRevision: staging
+    path: deploy/kubernetes/overlays/staging
   destination:
     server: https://kubernetes.default.svc
     namespace: lume-visual-dashboard
-  # Manual sync until the dev overlay sets the dev Ingress host. The base Ingress uses the
-  # prod host (ard-modeling-service.slac.stanford.edu) and could take over prod traffic.
-  # Once fixed, replace with:
-  #   syncPolicy:
-  #     automated: {}
-  #     syncOptions:
-  #       - CreateNamespace=true
   syncPolicy:
+    automated: {}
     syncOptions:
       - CreateNamespace=true
