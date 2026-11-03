@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: badger-gui
+  namespace: argocd
+spec:
+  project: badger-gui
+  source:
+    repoURL: https://github.com/xopt-org/badger.git
+    targetRevision: main
+    path: docker/on-demand/k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: badger-gui
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  # The nightly CronJob patches a restartedAt annotation onto the StatefulSet
+  # pod template spec.  Ignore it so ArgoCD doesn't flag the app as OutOfSync
+  # after every midnight restart.
+  ignoreDifferences:
+    - group: apps
+      kind: StatefulSet
+      name: badger-gui
+      jsonPointers:
+        - /spec/template/metadata/annotations
