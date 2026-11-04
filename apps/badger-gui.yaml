@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/xopt-org/badger.git
     targetRevision: main
-    path: docker/on-demand/k8s
+    path: on-demand/k8s
   destination:
     server: https://kubernetes.default.svc
     namespace: badger-gui
