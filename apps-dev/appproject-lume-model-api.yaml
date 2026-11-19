@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: lume-model-api
+  namespace: argocd
+spec:
+  description: LUME model API (eval pool + live producer)
+  sourceRepos:
+    - https://github.com/slaclab/lume-model-api
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: lume-model-api
+  # The app's kustomize base includes namespace.yaml, so the project must allow it.
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace

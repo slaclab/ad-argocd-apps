@@ -27,6 +27,7 @@ that folder is an ArgoCD `Application` (or `AppProject`) pointing at a deploymen
 | Application | Project | Deploys from | Namespace |
 |---|---|---|---|
 | `lume-visual-dashboard` | `lume-visual-dashboard` | `slaclab/lume-visual-dashboard` (`deploy/kubernetes/overlays/staging` on the `staging` branch) | `lume-visual-dashboard` |
+| `lume-model-api` | `lume-model-api` | `slaclab/lume-model-api` (`deploy/kubernetes` on `main`) | `lume-model-api` |
 
 Dev also runs `slacathon26`, which was created by hand and isn't defined in this repo.
 
