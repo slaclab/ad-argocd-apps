@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: lume-model-api
+  namespace: argocd
+spec:
+  project: lume-model-api
+  source:
+    repoURL: https://github.com/slaclab/lume-model-api
+    targetRevision: main
+    path: deploy/kubernetes
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: lume-model-api
+  syncPolicy:
+    automated: {}
